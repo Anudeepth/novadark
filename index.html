@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOVA AFTER DARK</title>
+    <!-- Triad Metadata: Visible, Searchable, Almost Invisible -->
+    <meta name="description" content="NOVA AFTER DARK — Sometimes the most obvious thing isn't the important thing.">
+    <meta name="clue:triad" content="There are three things here. One is visible. One is searchable. One is almost invisible.">
+    <meta name="clue:repository" content="Unfinished things are kept in repositories. Check the versions left behind.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #040508;
+            --mouse-x: 50%;
+            --mouse-y: 50%;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(circle 650px at var(--mouse-x) var(--mouse-y), rgba(30, 42, 66, 0.45), transparent 75%),
+                radial-gradient(ellipse 80% 50% at 50% 100%, rgba(15, 23, 42, 0.6), transparent);
+            color: #f1f5f9;
+            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            overflow: hidden;
+            padding: 3rem 2rem;
+            position: relative;
+        }
+
+        ::selection {
+            background: rgba(56, 189, 248, 0.25);
+            color: #38bdf8;
+            text-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+        }
+
+        /* Ambient subtle grain */
+        .ambient-noise {
+            position: fixed;
+            inset: 0;
+            opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Main Container */
+        .stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            flex: 1;
+            z-index: 2;
+            user-select: none;
+        }
+
+        /* Hero Typography */
+        .title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2.8rem, 8vw, 6.5rem);
+            font-weight: 800;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            line-height: 1.1;
+            margin-right: -0.22em; /* visual balance for letter-spacing */
+            background: linear-gradient(180deg, #ffffff 25%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px rgba(255, 255, 255, 0.12), 0 0 80px rgba(56, 189, 248, 0.15);
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s ease;
+        }
+
+        .stage:hover .title {
+            filter: drop-shadow(0 0 35px rgba(56, 189, 248, 0.3));
+        }
+
+        /* 1. The Visible Thing: Subtitle */
+        .subtext {
+            margin-top: 2rem;
+            font-size: clamp(0.75rem, 1.8vw, 0.95rem);
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: rgba(148, 163, 184, 0.5);
+            font-weight: 300;
+            transition: color 0.4s ease;
+        }
+
+        .stage:hover .subtext {
+            color: rgba(226, 232, 240, 0.75);
+        }
+
+        /* 2. The Searchable Thing (Searchable via Ctrl+F / Screen Readers / DOM) */
+        .searchable-layer {
+            position: absolute;
+            bottom: 4.5rem;
+            font-size: 0.7rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: rgba(148, 163, 184, 0.2);
+            z-index: 2;
+            transition: color 0.4s ease;
+        }
+
+        .searchable-layer:hover {
+            color: rgba(148, 163, 184, 0.6);
+        }
+
+        /* 3. The Almost Invisible Thing: Spectral Clue */
+        .spectral-clue {
+            color: #06080d; /* Nearly identical to dark background */
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            user-select: text;
+            cursor: default;
+            transition: color 0.6s cubic-bezier(0.16, 1, 0.3, 1), text-shadow 0.6s ease;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .spectral-clue:hover,
+        .spectral-clue::selection {
+            color: #38bdf8 !important;
+            text-shadow: 0 0 15px rgba(56, 189, 248, 0.8), 0 0 30px rgba(56, 189, 248, 0.4);
+        }
+
+        /* Minimal Responsive Polish */
+        @media (max-width: 640px) {
+            .subtext {
+                letter-spacing: 0.2em;
+            }
+            .title {
+                letter-spacing: 0.15em;
+                margin-right: -0.15em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-noise"></div>
+
+    <!-- Central Stage: The Primary Visual Display -->
+    <main class="stage">
+        <h1 class="title">NOVA AFTER DARK</h1>
+        <!-- 1. The Visible Thing -->
+        <p class="subtext">Sometimes the most obvious thing isn't the important thing.</p>
+    </main>
+
+    <!-- 2. The Searchable Thing: Indexed for search -->
+    <div class="searchable-layer" id="searchable-triad">
+        <span>repository &bull; versions left behind &bull; triad protocol</span>
+    </div>
+
+    <!-- 3. The Almost Invisible Thing: Hidden in shadows, revealed on highlight or hover -->
+    <footer class="spectral-clue" id="almost-invisible-sound" title="Select or highlight to illuminate">
+        echoing from the rooms like an unfinished sound.
+    </footer>
+
+    <script>
+        // Fluid, ultra-lightweight cursor illumination
+        window.addEventListener('pointermove', (e) => {
+            const x = ((e.clientX / window.innerWidth) * 100).toFixed(1);
+            const y = ((e.clientY / window.innerHeight) * 100).toFixed(1);
+            document.documentElement.style.setProperty('--mouse-x', `${x}%`);
+            document.documentElement.style.setProperty('--mouse-y', `${y}%`);
+        }, { passive: true });
+
+        // Console clue verification
+        console.log("%cNOVA AFTER DARK", "color: #38bdf8; font-size: 16px; font-weight: bold; letter-spacing: 2px;");
+        console.log("%cUnfinished things are kept in repositories. Check the versions left behind.", "color: #94a3b8; font-style: italic;");
+    </script>
+</body>
+</html>
