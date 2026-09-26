@@ -120,37 +120,29 @@
             color: rgba(148, 163, 184, 0.6);
         }
 
-        /* 3. The Almost Invisible Thing: Spectral Clue */
+        /* 3. The Almost Invisible Thing: Spectral Clue (Identical on Desktop & Android) */
         .spectral-clue {
-            color: #07090f; /* Nearly blends into dark canvas on desktop */
+            color: #040508; /* Exactly matches dark canvas background: invisible without the torch */
             font-size: clamp(0.72rem, 1.6vw, 0.82rem);
             letter-spacing: 0.2em;
             user-select: text;
             -webkit-user-select: text;
-            cursor: pointer;
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: default;
+            transition: color 0.35s ease, text-shadow 0.35s ease;
             z-index: 2;
             text-align: center;
-            padding: 0.5rem 1rem;
+            padding: 0.6rem 1rem;
             border-radius: 4px;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Illumination on Hover, Selection, Active Touch, or Tap Toggle */
+        /* Illumination: Desktop Hover, Selection, or Mobile Touch Torch proximity */
         .spectral-clue:hover,
         .spectral-clue:active,
-        .spectral-clue.illuminated,
+        .spectral-clue.torch-lit,
         .spectral-clue::selection {
             color: #38bdf8 !important;
             text-shadow: 0 0 15px rgba(56, 189, 248, 0.85), 0 0 30px rgba(56, 189, 248, 0.45);
-        }
-
-        /* Mobile & Touch Device Adaptations */
-        @media (hover: none) and (pointer: coarse) {
-            .spectral-clue {
-                /* Subtle hint on mobile touchscreens so users can tap to reveal */
-                color: rgba(148, 163, 184, 0.08);
-            }
         }
 
         @media (max-width: 640px) {
@@ -195,50 +187,62 @@
         <span>repository &bull; versions left behind &bull; triad protocol</span>
     </div>
 
-    <!-- 3. The Almost Invisible Thing: Hidden in shadows, revealed on hover, select, or mobile tap -->
-    <footer class="spectral-clue" id="almost-invisible-sound" role="button" tabindex="0" title="Tap or highlight to illuminate">
+    <!-- 3. The Almost Invisible Thing: Hidden in shadows, revealed exclusively by the touch/cursor torch -->
+    <footer class="spectral-clue" id="almost-invisible-sound">
         echoing from the rooms like an unfinished sound.
     </footer>
 
     <script>
         const clue = document.getElementById('almost-invisible-sound');
 
-        // Touch & Tap to illuminate for mobile screens (or click on desktop)
-        function toggleClue() {
-            clue.classList.toggle('illuminated');
-        }
-
-        clue.addEventListener('click', toggleClue);
-        clue.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                toggleClue();
-            }
-        });
-
-        // Fluid cursor & touch illumination coordinates
-        function updateGlow(clientX, clientY) {
+        // Fluid cursor & touch torch illumination
+        function updateTorch(clientX, clientY) {
             const x = ((clientX / window.innerWidth) * 100).toFixed(1);
             const y = ((clientY / window.innerHeight) * 100).toFixed(1);
             document.documentElement.style.setProperty('--mouse-x', `${x}%`);
             document.documentElement.style.setProperty('--mouse-y', `${y}%`);
+
+            // Check if touch or cursor torch shines on the clue
+            const rect = clue.getBoundingClientRect();
+            const clueCenterX = rect.left + rect.width / 2;
+            const clueCenterY = rect.top + rect.height / 2;
+            const dist = Math.hypot(clientX - clueCenterX, clientY - clueCenterY);
+
+            // Illuminates only when the touch torch is directly shining near it (within 130px)
+            if (dist < 130) {
+                clue.classList.add('torch-lit');
+            } else {
+                clue.classList.remove('torch-lit');
+            }
         }
 
+        // Desktop mouse tracking
         window.addEventListener('pointermove', (e) => {
-            updateGlow(e.clientX, e.clientY);
-        }, { passive: true });
-
-        // Direct Touch Drag / Tap support on Mobile
-        window.addEventListener('touchmove', (e) => {
-            if (e.touches && e.touches.length > 0) {
-                updateGlow(e.touches[0].clientX, e.touches[0].clientY);
+            if (e.pointerType === 'mouse') {
+                updateTorch(e.clientX, e.clientY);
             }
         }, { passive: true });
 
+        // Android / Mobile Touch Torch - Illuminates only when actively touching
         window.addEventListener('touchstart', (e) => {
             if (e.touches && e.touches.length > 0) {
-                updateGlow(e.touches[0].clientX, e.touches[0].clientY);
+                updateTorch(e.touches[0].clientX, e.touches[0].clientY);
             }
+        }, { passive: true });
+
+        window.addEventListener('touchmove', (e) => {
+            if (e.touches && e.touches.length > 0) {
+                updateTorch(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, { passive: true });
+
+        // When finger lifts on mobile, the torch turns off immediately
+        window.addEventListener('touchend', () => {
+            clue.classList.remove('torch-lit');
+        }, { passive: true });
+
+        window.addEventListener('touchcancel', () => {
+            clue.classList.remove('torch-lit');
         }, { passive: true });
 
         // Console clue verification
